@@ -1,24 +1,40 @@
-import logo from './logo.svg';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Gallery from './components/Gallery';
+import About from './components/About';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
+import AdminLogin from './pages/AdminLogin';
+import AdminPanel from './pages/AdminPanel';
+import GalleryPage from './pages/GalleryPage';
+
+function Site() {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <Gallery />
+      <About />
+      <Contact />
+      <Footer />
+    </>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Site />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminPanel />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
