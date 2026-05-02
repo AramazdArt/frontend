@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -25,7 +25,7 @@ function Site() {
 
 function App() {
   return (
-    <BrowserRouter basename="/frontend">
+    <HashRouter>
       <div className="App">
         <Routes>
           <Route path="/" element={<Site />} />
@@ -34,7 +34,7 @@ function App() {
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
