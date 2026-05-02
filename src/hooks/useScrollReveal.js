@@ -19,7 +19,7 @@ export function useScrollReveal(options = {}) {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [options]);
 
   return ref;
 }
