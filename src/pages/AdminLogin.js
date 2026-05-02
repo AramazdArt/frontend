@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../auth';
 import './AdminLogin.css';
 
@@ -46,7 +46,7 @@ function AdminLogin() {
           {error && <p className="admin-login__error">{error}</p>}
           <button type="submit" className="admin-login__btn">Sign In</button>
         </form>
-        <a href="/" className="admin-login__back">← Back to site</a>
+        <Link to="/" className="admin-login__back">← Back to site</Link>
       </div>
     </div>
   );

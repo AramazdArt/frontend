@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../auth';
 import { getArtworks, addArtwork, deleteArtwork } from '../artworks';
 import './AdminPanel.css';
@@ -64,7 +64,7 @@ function AdminPanel() {
       <header className="admin-panel__header">
         <span className="admin-panel__brand">Admin — Aramazd</span>
         <div className="admin-panel__header-right">
-          <a href="/" className="admin-panel__link">View Site</a>
+          <Link to="/" className="admin-panel__link">View Site</Link>
           <button className="admin-panel__logout" onClick={handleLogout}>Log Out</button>
         </div>
       </header>
