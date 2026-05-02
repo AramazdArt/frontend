@@ -54,6 +54,14 @@ function AdminPanel() {
     setArtworks(deleteArtwork(id));
   };
 
+  const handleResetGallery = () => {
+    if (!window.confirm('Clear saved gallery data? This will remove all admin-added artworks.')) return;
+    localStorage.removeItem('ap_artworks');
+    setArtworks([]);
+    setSuccess('Gallery storage cleared. Refresh the homepage to see the change.');
+    setTimeout(() => setSuccess(''), 3000);
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -64,6 +72,7 @@ function AdminPanel() {
       <header className="admin-panel__header">
         <span className="admin-panel__brand">Admin — Aramazd</span>
         <div className="admin-panel__header-right">
+          <button className="admin-panel__link" onClick={handleResetGallery}>Reset Gallery</button>
           <Link to="/" className="admin-panel__link">View Site</Link>
           <button className="admin-panel__logout" onClick={handleLogout}>Log Out</button>
         </div>
