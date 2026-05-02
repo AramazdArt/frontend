@@ -25,7 +25,7 @@ function Site() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/frontend">
       <div className="App">
         <Routes>
           <Route path="/" element={<Site />} />
