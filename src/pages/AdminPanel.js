@@ -10,14 +10,15 @@ function AdminPanel() {
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState('');
-  const [tab, setTab] = useState('add'); // 'add' | 'manage'
+  const [tab, setTab] = useState('add');
   const [success, setSuccess] = useState('');
   const fileRef = useRef();
 
   useEffect(() => {
     if (!isAuthenticated()) navigate('/admin/login');
-    setArtworks(getArtworks());
+    getArtworks().then(setArtworks);
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -28,20 +29,18 @@ function AdminPanel() {
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setForm((f) => ({ ...f, img: ev.target.result }));
-      setPreview(ev.target.result);
-    };
-    reader.readAsDataURL(file);
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.img) return;
-    const updated = addArtwork(form);
+    if (!imageFile && !form.img) return;
+    await addArtwork(form, imageFile);
+    const updated = await getArtworks();
     setArtworks(updated);
     setForm(EMPTY_FORM);
+    setImageFile(null);
     setPreview('');
     if (fileRef.current) fileRef.current.value = '';
     setSuccess('Artwork added successfully!');
@@ -49,17 +48,11 @@ function AdminPanel() {
     setTab('manage');
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Delete this artwork?')) return;
-    setArtworks(deleteArtwork(id));
-  };
-
-  const handleResetGallery = () => {
-    if (!window.confirm('Clear saved gallery data? This will remove all admin-added artworks.')) return;
-    localStorage.removeItem('ap_artworks');
-    setArtworks([]);
-    setSuccess('Gallery storage cleared. Refresh the homepage to see the change.');
-    setTimeout(() => setSuccess(''), 3000);
+    await deleteArtwork(id);
+    const updated = await getArtworks();
+    setArtworks(updated);
   };
 
   const handleLogout = () => {
@@ -72,7 +65,6 @@ function AdminPanel() {
       <header className="admin-panel__header">
         <span className="admin-panel__brand">Admin — Aramazd</span>
         <div className="admin-panel__header-right">
-          <button className="admin-panel__link" onClick={handleResetGallery}>Reset Gallery</button>
           <Link to="/" className="admin-panel__link">View Site</Link>
           <button className="admin-panel__logout" onClick={handleLogout}>Log Out</button>
         </div>
@@ -128,7 +120,7 @@ function AdminPanel() {
             </div>
             <div className="admin-panel__field">
               <label>— or paste image URL</label>
-              <input name="img" value={form.img.startsWith('data:') ? '' : form.img} onChange={handleChange} placeholder="https://..." />
+              <input name="img" value={form.img} onChange={handleChange} placeholder="https://..." />
             </div>
             {preview && (
               <div className="admin-panel__preview">

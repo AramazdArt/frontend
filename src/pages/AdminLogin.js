@@ -9,9 +9,9 @@ function AdminLogin() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (login(username, password)) {
+    if (await login(username, password)) {
       navigate('/admin');
     } else {
       setError('Invalid username or password.');

@@ -1,13 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getArtworks } from '../artworks';
+import { CATEGORIES, filterArtworks } from '../galleryUtils';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import './Gallery.css';
-
-const CATEGORIES = [
-  { label: 'All', match: null },
-  { label: 'Oil', match: 'oil' },
-  { label: 'Pastel', match: 'pastel' },
-];
 
 function Gallery() {
   const [artworks, setArtworks] = useState([]);
@@ -18,14 +13,10 @@ function Gallery() {
   const gridRef = useScrollReveal({ threshold: 0.05 });
 
   useEffect(() => {
-    setArtworks(getArtworks());
+    getArtworks().then(setArtworks);
   }, []);
 
-  const filtered = category === 'All'
-    ? artworks
-    : artworks.filter((a) => a.medium.toLowerCase().includes(
-        CATEGORIES.find((c) => c.label === category).match
-      ));
+  const filtered = filterArtworks(artworks, category);
 
   const openLightbox = (artwork) => setLightbox(artwork);
   const closeLightbox = () => setLightbox(null);

@@ -1,13 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getArtworks } from '../artworks';
+import { CATEGORIES, filterArtworks } from '../galleryUtils';
 import './GalleryPage.css';
-
-const CATEGORIES = [
-  { label: 'All', match: null },
-  { label: 'Oil', match: 'oil' },
-  { label: 'Pastel', match: 'pastel' },
-];
 
 function GalleryPage() {
   const [artworks, setArtworks] = useState([]);
@@ -15,39 +10,39 @@ function GalleryPage() {
   const [category, setCategory] = useState('All');
 
   useEffect(() => {
-    setArtworks(getArtworks());
+    getArtworks().then(setArtworks);
   }, []);
 
-  const filtered = category === 'All'
-    ? artworks
-    : artworks.filter((a) =>
-        a.medium.toLowerCase().includes(
-          CATEGORIES.find((c) => c.label === category).match
-        )
-      );
+  const filtered = filterArtworks(artworks, category);
 
-  const closeLightbox = () => setLightbox(null);
+  const closeLightbox = useCallback(() => setLightbox(null), []);
 
-  const showPrev = () => {
-    const idx = filtered.findIndex((a) => a.id === lightbox.id);
-    setLightbox(filtered[(idx - 1 + filtered.length) % filtered.length]);
-  };
+  const showPrev = useCallback(() => {
+    setLightbox((current) => {
+      if (!current) return null;
+      const idx = filtered.findIndex((a) => a.id === current.id);
+      return filtered[(idx - 1 + filtered.length) % filtered.length];
+    });
+  }, [filtered]);
 
-  const showNext = () => {
-    const idx = filtered.findIndex((a) => a.id === lightbox.id);
-    setLightbox(filtered[(idx + 1) % filtered.length]);
-  };
+  const showNext = useCallback(() => {
+    setLightbox((current) => {
+      if (!current) return null;
+      const idx = filtered.findIndex((a) => a.id === current.id);
+      return filtered[(idx + 1) % filtered.length];
+    });
+  }, [filtered]);
 
   useEffect(() => {
+    if (!lightbox) return;
     const onKey = (e) => {
-      if (!lightbox) return;
       if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') showPrev();
       if (e.key === 'ArrowRight') showNext();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  });
+  }, [lightbox, closeLightbox, showPrev, showNext]);
 
   return (
     <div className="gallery-page">

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-export function useScrollReveal(options = {}) {
+export function useScrollReveal(options) {
   const ref = useRef(null);
+  const optionsRef = useRef(options);
 
   useEffect(() => {
     const el = ref.current;
@@ -14,12 +15,12 @@ export function useScrollReveal(options = {}) {
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15, ...options }
+      { threshold: 0.15, ...optionsRef.current }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [options]);
+  }, []);
 
   return ref;
 }

@@ -1,19 +1,27 @@
 import { useState } from 'react';
+import { apiPost } from '../api';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import './Contact.css';
 
 function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
   const innerRef = useScrollReveal();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
+    setError('');
+    try {
+      await apiPost('/api/contact', form);
+      setSent(true);
+    } catch {
+      setError('Failed to send message. Please try again.');
+    }
   };
 
   return (
@@ -66,6 +74,7 @@ function Contact() {
                 required
               />
             </div>
+            {error && <p className="contact__error">{error}</p>}
             <button type="submit" className="contact__submit">Send Message</button>
           </form>
         )}
