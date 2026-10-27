@@ -234,6 +234,48 @@
   letter-spacing: 0.08em;
 }
 
+.admin-panel__form-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.admin-panel__cancel {
+  padding: 0.8rem 2rem;
+  background: none;
+  border: 1px solid rgba(240, 237, 232, 0.2);
+  color: #f0ede8;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.admin-panel__cancel:hover {
+  opacity: 1;
+}
+
+.admin-panel__edit {
+  background: none;
+  border: 1px solid rgba(180, 180, 80, 0.3);
+  color: #c0c070;
+  padding: 0.35rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.admin-panel__edit:hover {
+  background: rgba(180, 180, 80, 0.1);
+}
+
 .admin-panel__delete {
   background: none;
   border: 1px solid rgba(220, 80, 80, 0.3);

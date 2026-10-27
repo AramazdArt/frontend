@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../auth';
-import { getArtworks, addArtwork, deleteArtwork } from '../artworks';
+import { getArtworks, addArtwork, updateArtwork, deleteArtwork } from '../artworks';
 import './AdminPanel.css';
 
 const EMPTY_FORM = { title: '', year: new Date().getFullYear(), medium: '', size: 'square', img: '' };
@@ -12,6 +12,7 @@ function AdminPanel() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState('');
+  const [editingId, setEditingId] = useState(null);
   const [tab, setTab] = useState('add');
   const [success, setSuccess] = useState('');
   const fileRef = useRef();
@@ -33,17 +34,42 @@ function AdminPanel() {
     setPreview(URL.createObjectURL(file));
   };
 
+  const handleEdit = (art) => {
+    setEditingId(art.id);
+    setForm({ title: art.title, year: art.year, medium: art.medium, size: art.size, img: '' });
+    setPreview(art.img);
+    setImageFile(null);
+    if (fileRef.current) fileRef.current.value = '';
+    setTab('add');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setPreview('');
+    setImageFile(null);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile && !form.img) return;
-    await addArtwork(form, imageFile);
+    if (!editingId && !imageFile && !form.img) return;
+
+    if (editingId) {
+      await updateArtwork(editingId, form, imageFile);
+      setSuccess('Artwork updated successfully!');
+    } else {
+      await addArtwork(form, imageFile);
+      setSuccess('Artwork added successfully!');
+    }
+
     const updated = await getArtworks();
     setArtworks(updated);
+    setEditingId(null);
     setForm(EMPTY_FORM);
     setImageFile(null);
     setPreview('');
     if (fileRef.current) fileRef.current.value = '';
-    setSuccess('Artwork added successfully!');
     setTimeout(() => setSuccess(''), 3000);
     setTab('manage');
   };
@@ -74,9 +100,9 @@ function AdminPanel() {
         <div className="admin-panel__tabs">
           <button
             className={`admin-panel__tab ${tab === 'add' ? 'active' : ''}`}
-            onClick={() => setTab('add')}
+            onClick={() => { setTab('add'); if (!editingId) handleCancelEdit(); }}
           >
-            Add Artwork
+            {editingId ? 'Edit Artwork' : 'Add Artwork'}
           </button>
           <button
             className={`admin-panel__tab ${tab === 'manage' ? 'active' : ''}`}
@@ -127,7 +153,16 @@ function AdminPanel() {
                 <img src={preview} alt="Preview" />
               </div>
             )}
-            <button type="submit" className="admin-panel__submit">Add to Gallery</button>
+            <div className="admin-panel__form-actions">
+              <button type="submit" className="admin-panel__submit">
+                {editingId ? 'Save Changes' : 'Add to Gallery'}
+              </button>
+              {editingId && (
+                <button type="button" className="admin-panel__cancel" onClick={handleCancelEdit}>
+                  Cancel
+                </button>
+              )}
+            </div>
           </form>
         )}
 
@@ -141,6 +176,7 @@ function AdminPanel() {
                   <p className="admin-panel__artwork-title">{art.title}</p>
                   <p className="admin-panel__artwork-meta">{art.medium} · {art.year} · {art.size}</p>
                 </div>
+                <button className="admin-panel__edit" onClick={() => handleEdit(art)}>Edit</button>
                 <button className="admin-panel__delete" onClick={() => handleDelete(art.id)}>Delete</button>
               </div>
             ))}

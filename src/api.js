@@ -39,6 +39,19 @@ export async function apiPostForm(path, formData) {
   return res.json();
 }
 
+export async function apiPutForm(path, formData) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `PUT ${path} failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function apiDelete(path) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'DELETE',
